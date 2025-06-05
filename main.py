@@ -11,6 +11,7 @@ from cryptography.hazmat.backends import default_backend
 import netmiko
 from netmiko import ConnectHandler
 import time
+from datetime import datetime
 
 app = FastAPI()
 
@@ -148,19 +149,19 @@ async def push_config(device_ip: str = Form(...)):
             # Enter config mode
             conn.config_mode()
             # Send the command to start cert input
-            conn.send_command_timing("crypto pki authenticate MY-TRUSTPOINT")
+            output += conn.send_command_timing("crypto pki authenticate MY-TRUSTPOINT")
 
             # Send cert line-by-line using send_command_timing
             # for line in pem_lines:
             #     print(f"SENDING: {line}")
             #     conn.send_command_timing(line)
             pem_input = "\n".join(pem_lines)
-            conn.send_command_timing(pem_input)
+            output += conn.send_command_timing(pem_input)
 
             # Send 'quit' to finish input
-            conn.send_command_timing("quit")
+            output += conn.send_command_timing("quit")
             # Send 'yes' to accept the certificate
-            conn.send_command_timing("yes")
+            output += output + conn.send_command_timing("yes")
             # Exit config mode
             conn.exit_config_mode()
 
@@ -206,4 +207,32 @@ async def clear_credentials():
         os.remove("data/credentials.enc")
         return {"message": "Credentials cleared successfully."}
     else:
-        return {"message": "No credentials to clear."} 
+        return {"message": "No credentials to clear."}
+
+@app.get("/session-logs/{device_ip}")
+async def get_session_logs(device_ip: str):
+    try:
+        log_file_path = os.path.join('data', 'session_logs', f'netmiko_{device_ip}.log')
+        
+        # Check if log file exists
+        if not os.path.exists(log_file_path):
+            raise HTTPException(
+                status_code=404,
+                detail=f"No session logs found for device {device_ip}"
+            )
+            
+        # Read the log file
+        with open(log_file_path, 'r') as log_file:
+            log_content = log_file.read()
+            
+        return {
+            "device_ip": device_ip,
+            "log_content": log_content,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error retrieving session logs: {str(e)}"
+        ) 
