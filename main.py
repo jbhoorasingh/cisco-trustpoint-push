@@ -110,7 +110,7 @@ async def push_config(device_ip: str = Form(...)):
             'read_timeout_override': 60,
             'fast_cli': True,
             # 'global_delay_factor': 2,
-            'session_log': os.path.join('data', 'session_logs', f'netmiko_session_{device_ip}.log')
+            'session_log': os.path.join('data', 'session_logs', f'netmiko_{device_ip}.log')
         }
         
         print(f"Connecting to device {device_ip}...")
