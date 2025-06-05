@@ -110,7 +110,7 @@ async def push_config(device_ip: str = Form(...)):
             'read_timeout_override': 60,
             'fast_cli': True,
             # 'global_delay_factor': 2,
-            'session_log': 'netmiko_session.log'
+            'session_log': os.path.join('data', 'session_logs', f'netmiko_session_{device_ip}.log')
         }
         
         print(f"Connecting to device {device_ip}...")
@@ -151,9 +151,11 @@ async def push_config(device_ip: str = Form(...)):
             conn.send_command_timing("crypto pki authenticate MY-TRUSTPOINT")
 
             # Send cert line-by-line using send_command_timing
-            for line in pem_lines:
-                print(f"SENDING: {line}")
-                conn.send_command_timing(line)
+            # for line in pem_lines:
+            #     print(f"SENDING: {line}")
+            #     conn.send_command_timing(line)
+            pem_input = "\n".join(pem_lines)
+            conn.send_command_timing(pem_input)
 
             # Send 'quit' to finish input
             conn.send_command_timing("quit")
