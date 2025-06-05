@@ -1,21 +1,35 @@
-# Cisco Trustpoint Pusher
+# Network Device Trustpoint Pusher
 
-A FastAPI application that helps push trustpoint configurations to Cisco IOS devices.
+A web application for managing and pushing CA certificates to network devices.
 
 ## Features
 
-- Secure storage of device credentials (encrypted)
-- CA certificate management
-- Certificate attribute viewing
-- Trustpoint configuration pushing to Cisco IOS devices
-- Modern web interface using Vue.js
+- Store and manage CA certificates
+- Secure credential management
+- Push certificates to multiple network devices
+- Real-time status monitoring
+- Session logging for troubleshooting
 
-## Setup
+## Screenshots
 
-1. Create a virtual environment and activate it:
+### CA Certificate Management
+![CA Certificate Management](docs/media/img-ca-mgmt.png)
+*Upload and manage CA certificates with ease*
+
+### Credential Management
+![Credential Management](docs/media/img-mange-credentials.png)
+*Securely store and manage device credentials*
+
+### Push Configuration
+![Push Configuration](docs/media/img-push-configurations.png)
+*Push certificates to multiple devices with real-time status updates*
+
+## Installation
+
+1. Clone the repository:
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
+git clone https://github.com/jbhoorasingh/cisco-trustpoint-push.git
+cd cisco-trustpoint-push
 ```
 
 2. Install dependencies:
@@ -28,26 +42,43 @@ pip install -r requirements.txt
 uvicorn main:app --reload
 ```
 
-4. Open your browser and navigate to `http://localhost:8000`
+The application will be available at `http://localhost:8000`
 
 ## Usage
 
-1. First, store your device credentials using the "Store Credentials" form
-2. Upload your CA certificate in PEM format
-3. View the certificate details to verify the certificate
-4. Enter the device IP address and push the configuration
+1. **Store CA Certificate**
+   - Upload your CA certificate in PEM format
+   - The certificate will be stored securely
 
-## Security Notes
+2. **Store Credentials**
+   - Enter device credentials
+   - Credentials are encrypted and stored securely
 
-- Credentials are stored encrypted using Fernet symmetric encryption
-- The encryption key is stored in `data/encryption.key`
-- The CA certificate is stored in plain text in `data/ca_cert.pem`
-- Make sure to secure the `data` directory appropriately
+3. **Push Configuration**
+   - Enter one or more device IPs/FQDNs (one per line)
+   - Click "Push Configuration"
+   - Monitor real-time status for each device
+   - Green check mark indicates success
+   - Red X indicates failure
 
-## API Endpoints
+## Session Logs
 
-- POST `/store-credentials`: Store device credentials
-- POST `/store-ca-cert`: Store CA certificate
-- GET `/read-ca-cert`: Read and display certificate attributes
-- POST `/push-config`: Push trustpoint configuration to device
-- GET `/`: Web interface 
+Session logs are stored in the `data/session_logs` directory. Each device's session is logged separately for troubleshooting purposes.
+
+## Security
+
+- Credentials are encrypted using Fernet (symmetric encryption)
+- CA certificates are stored securely
+- No sensitive data is exposed in the logs
+
+## Requirements
+
+- Python 3.7+
+- FastAPI
+- Netmiko
+- Cryptography
+- Uvicorn
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details. 
